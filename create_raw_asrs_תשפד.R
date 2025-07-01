@@ -7,7 +7,7 @@ library(hms)
 #### CREATE ASRS RAW ####
 
 #load 
-asrs <- read_tsv("data/תשפד/collected_data/ASRS_June+1,+2025_15.10_values.tsv",
+asrs <- read_tsv("data/תשפד/collected_data/ASRS_July+1,+2025_10.50.tsv",
                  locale = locale(encoding = "UTF-16")) 
 
 #housekeeping

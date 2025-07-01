@@ -15,4 +15,5 @@ df = diva |>
 
 
 write.csv(df , file =  'data/all_cohorts_raw_data/diva_after_exclusions_with_sumscores.csv')
+save(df , file =  'data/all_cohorts_raw_data/diva_after_exclusions_with_sumscores.R')
 

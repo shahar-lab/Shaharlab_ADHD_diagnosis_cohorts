@@ -6,7 +6,7 @@ library(ggplot2)
 #### CREATE ICAR RAW ####
 
 #load 
-icar <- read_tsv("data/תשפה/collected_data/ICAR16_תשפה_June+1,+2025_09.03_values.tsv",
+icar <- read_tsv("data/תשפה/collected_data/ICAR16_תשפה_July+1,+2025_11.26.tsv",
                  locale = locale(encoding = "UTF-16")) 
 
 #housekeeping

@@ -7,7 +7,7 @@ library(hms)
 #### CREATE ICAR RAW ####
 
 #load 
-icar <- read_tsv("data/תשפד/collected_data/ICAR16_June+1,+2025_08.08_values.tsv",
+icar <- read_tsv("data/תשפד/collected_data/ICAR16_July+1,+2025_11.17.tsv",
                  locale = locale(encoding = "UTF-16")) 
 
 #housekeeping

@@ -84,6 +84,30 @@ icar = bind_rows(
 rm(icar_תשפד, icar_תשפה)
 save(icar, file = 'data/all_cohorts_raw_data/icar.Rdata')
 
+
+#### ASRS ----
+# load asrs from תשפד 
+load('data/תשפד/raw_data/asrs.Rdata')
+asrs_תשפד = asrs
+rm(asrs)
+
+# load patas from תשפה 
+load('data/תשפה/raw_data/asrs.Rdata')
+asrs_תשפה = asrs
+rm(asrs)
+
+#merge
+asrs = bind_rows(
+  select(asrs_תשפד, subjectid, asrs, asrs_ia, asrs_hi),
+  select(asrs_תשפה, subjectid, asrs, asrs_ia, asrs_hi)
+)
+rm(asrs_תשפד, asrs_תשפה)
+save(asrs, file = 'data/all_cohorts_raw_data/asrs.Rdata')
+
+
+
+
+
 #### PATAS ----
 # load patas from תשפד 
 load('data/תשפד/raw_data/patas.Rdata')
@@ -109,23 +133,4 @@ save(patas, file = 'data/all_cohorts_raw_data/patas.Rdata')
 
 
 
-
-#### ASRS ----
-# load asrs from תשפד 
-load('data/תשפד/raw_data/asrs.Rdata')
-asrs_תשפד = asrs
-rm(asrs)
-
-# load patas from תשפה 
-load('data/תשפה/raw_data/asrs.Rdata')
-asrs_תשפה = asrs
-rm(asrs)
-
-#merge
-asrs = bind_rows(
-  select(asrs_תשפד, subjectid, asrs, asrs_ia, asrs_hi),
-  select(asrs_תשפה, subjectid, asrs, asrs_ia, asrs_hi)
-)
-rm(asrs_תשפד, asrs_תשפה)
-save(asrs, file = 'data/all_cohorts_raw_data/asrs.Rdata')
 
