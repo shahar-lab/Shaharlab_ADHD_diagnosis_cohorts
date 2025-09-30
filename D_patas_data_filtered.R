@@ -9,7 +9,7 @@ df = df |>
   left_join(patas, by = "subjectid") 
 
 
-
+df = df |> filter(diva_group == "ADHD")
 df = df |> filter(diva_group == "ADHD" & is.na(patas)==F)
 
 write.csv(df |> filter(diva_group == "ADHD"), file =  'data/all_cohorts_raw_data/patas_filtered_data.csv')

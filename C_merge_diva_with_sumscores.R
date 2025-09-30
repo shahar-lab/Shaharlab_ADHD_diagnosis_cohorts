@@ -27,10 +27,7 @@ df = diva |>
   left_join(stai  |> select(subjectid,stai, stai_state, stai_trait ), by = "subjectid") |>
   left_join(ocir  |> select(subjectid,ocir ), by = "subjectid") |>
   
-  left_join(aq  |> select(subjectid, aq), by = "subjectid") |>
-  
-  left_join(patas, by = "subjectid") 
-
+  left_join(aq  |> select(subjectid, aq), by = "subjectid") 
 
 
 write.csv(df , file =  'data/all_cohorts_raw_data/diva_after_exclusions_with_sumscores.csv')
