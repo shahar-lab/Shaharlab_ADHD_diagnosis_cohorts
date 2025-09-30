@@ -7,7 +7,7 @@ library(hms)
 #### CREATE PATAS RAW ####
 
 #load 
-patas <- read_tsv("data/תשפד/collected_data/PATAS_June+1,+2025_11.51_values.tsv",
+patas <- read_tsv("data/תשפד/collected_data/PATAS_July+1,+2025_11.20.tsv",
                  locale = locale(encoding = "UTF-16")) 
 
 #housekeeping

@@ -25,7 +25,7 @@ asrs <- asrs |>
   ) |>
   
   #  survey data
-  mutate (cohort = "תשפד") |>
+  mutate (cohort = "תשפה") |>
   rename(date_recorded      = RecordedDate) |>   
   
   #rename asrs 
@@ -63,15 +63,23 @@ asrs <- asrs |>
   #filter out cases that did not finish the survey 
   filter(Finished == 1) |>
   filter(!is.na(asrs), !is.na(asrs1)) |> 
-  
-  
+
   #columns to keep
   select(subjectid,
          cohort,date_recorded,
          asrs, asrs_ia, asrs_hi, asrs_ia_count, asrs_hi_count,
-         asrs1, asrs2 , asrs3 , asrs4 , asrs5 , asrs6 , 
-         asrs7, asrs8 , asrs9 , asrs10 , asrs11 , asrs12 ,
-         asrs13 , asrs14 , asrs15 , asrs16 , asrs17 , asrs18)
+         asrs1, asrs2 , asrs3 , asrs4 , asrs5 , asrs6, 
+         asrs7, asrs8 , asrs9, asrs10 , asrs11 , asrs12 ,
+         asrs13 , asrs14 , asrs15 , asrs16, asrs17, asrs18)
+
+  
+  # #columns to keep
+  # select(subjectid,
+  #        cohort,date_recorded,
+  #        asrs+18, asrs_ia+18, asrs_hi+18, asrs_ia_count, asrs_hi_count,
+  #        asrs1+1, asrs2+1 , asrs3+1 , asrs4+1 , asrs5+1 , asrs6+1 , 
+  #        asrs7+1, asrs8+1 , asrs9+1 , asrs10+1 , asrs11+1 , asrs12+1 ,
+  #        asrs13+1 , asrs14+1 , asrs15+1 , asrs16+1 , asrs17+1 , asrs18+1)
 
 
 

@@ -24,7 +24,12 @@ hp1 = bind_rows(
 
 rm(hp1_תשפד, hp1_תשפה)
 
+#duplicates
+hp1 |> group_by(subjectid) |> filter(n() > 1) |> ungroup() 
+
 save(hp1, file = 'data/all_cohorts_raw_data/hp1.Rdata')
+
+
 
 #### DIVA  ----
 
@@ -65,6 +70,45 @@ save(diva, file = 'data/all_cohorts_raw_data/diva.Rdata')
 
 
 
+#### ASRS ----
+# load asrs from תשפד 
+load('data/תשפד/raw_data/asrs.Rdata')
+asrs_תשפד = asrs
+rm(asrs)
+
+# load patas from תשפה 
+load('data/תשפה/raw_data/asrs.Rdata')
+asrs_תשפה = asrs
+rm(asrs)
+
+#merge
+asrs = bind_rows(
+  select(asrs_תשפד, subjectid, asrs, asrs_ia, asrs_hi,asrs_ia_count, asrs_hi_count),
+  select(asrs_תשפה, subjectid, asrs, asrs_ia, asrs_hi, asrs_ia_count, asrs_hi_count)
+)
+rm(asrs_תשפד, asrs_תשפה)
+save(asrs, file = 'data/all_cohorts_raw_data/asrs.Rdata')
+
+
+#### WURS  ----
+# load WURS from תשפד 
+load('data/תשפד/raw_data/wurs.Rdata')
+x_תשפד = wurs
+rm(wurs)
+
+# load WURS from תשפה 
+load('data/תשפה/raw_data/wurs.Rdata')
+x_תשפה = wurs
+rm(wurs)
+
+#merge
+wurs = bind_rows(
+  select(x_תשפד, subjectid, wurs),
+  select(x_תשפה, subjectid, wurs)
+)
+rm(x_תשפד, x_תשפה)
+save(wurs, file = 'data/all_cohorts_raw_data/wurs.Rdata')
+
 #### ICAR ----
 # load icar from תשפד 
 load('data/תשפד/raw_data/icar.Rdata')
@@ -85,25 +129,85 @@ rm(icar_תשפד, icar_תשפה)
 save(icar, file = 'data/all_cohorts_raw_data/icar.Rdata')
 
 
-#### ASRS ----
-# load asrs from תשפד 
-load('data/תשפד/raw_data/asrs.Rdata')
-asrs_תשפד = asrs
-rm(asrs)
 
-# load patas from תשפה 
-load('data/תשפה/raw_data/asrs.Rdata')
-asrs_תשפה = asrs
-rm(asrs)
+#### BDI ----
+# load bdi from תשפד 
+load('data/תשפד/raw_data/bdi.Rdata')
+bdi_תשפד = bdi
+rm(bdi)
+
+# load bdi from תשפה 
+load('data/תשפה/raw_data/bdi.Rdata')
+bdi_תשפה = bdi
+rm(bdi)
 
 #merge
-asrs = bind_rows(
-  select(asrs_תשפד, subjectid, asrs, asrs_ia, asrs_hi),
-  select(asrs_תשפה, subjectid, asrs, asrs_ia, asrs_hi)
+bdi = bind_rows(
+  select(bdi_תשפד, subjectid, bdi),
+  select(bdi_תשפה, subjectid, bdi)
 )
-rm(asrs_תשפד, asrs_תשפה)
-save(asrs, file = 'data/all_cohorts_raw_data/asrs.Rdata')
+rm(bdi_תשפד, bdi_תשפה)
+save(bdi, file = 'data/all_cohorts_raw_data/bdi.Rdata')
 
+
+
+#### STAI  ----
+# load STAI from תשפד 
+load('data/תשפד/raw_data/stai.Rdata')
+x_תשפד = stai
+rm(stai)
+
+# load STAI from תשפה 
+load('data/תשפה/raw_data/stai.Rdata')
+x_תשפה = stai
+rm(stai)
+
+#merge
+stai = bind_rows(
+  select(x_תשפד, subjectid, stai, stai_state, stai_trait ),
+  select(x_תשפה, subjectid, stai, stai_state, stai_trait )
+)
+rm(x_תשפד, x_תשפה)
+save(stai, file = 'data/all_cohorts_raw_data/stai.Rdata')
+
+#### ocir  ----
+# load ocir from תשפד 
+load('data/תשפד/raw_data/ocir.Rdata')
+x_תשפד = ocir
+rm(ocir)
+
+# load ocir from תשפה 
+load('data/תשפה/raw_data/ocir.Rdata')
+x_תשפה = ocir
+rm(ocir)
+
+#merge
+ocir = bind_rows(
+  select(x_תשפד, subjectid, ocir, ocir_hoarding, ocir_checking, ocir_ordering, ocir_neutralizing,ocir_washing, ocir_obsessing ),
+  select(x_תשפה, subjectid, ocir, ocir_hoarding, ocir_checking, ocir_ordering, ocir_neutralizing,ocir_washing, ocir_obsessing)
+)
+rm(x_תשפד, x_תשפה)
+save(ocir, file = 'data/all_cohorts_raw_data/ocir.Rdata')
+
+
+#### AQ ----
+# load asrs from תשפד 
+load('data/תשפד/raw_data/aq.Rdata')
+aq_תשפד = aq
+rm(aq)
+
+# load patas from תשפה 
+load('data/תשפה/raw_data/aq.Rdata')
+aq_תשפה = aq
+rm(aq)
+
+#merge
+aq = bind_rows(
+  select(aq_תשפד, subjectid, aq),
+  select(aq_תשפה, subjectid, aq)
+)
+rm(aq_תשפד, aq_תשפה)
+save(aq, file = 'data/all_cohorts_raw_data/aq.Rdata')
 
 
 

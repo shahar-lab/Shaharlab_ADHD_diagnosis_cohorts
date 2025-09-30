@@ -57,7 +57,7 @@ hp1 <- hp1 |>
                               "דצמבר"   = "December")) |> 
   mutate(DOB_day     = 15,
          DOB         = parse_date_time(paste(DOB_day, DOB_month, DOB_year, sep = "-"), orders = "d-B-Y"),
-         date_recorded = ymd_hms(date_recorded),
+         date_recorded = dmy_hm(date_recorded),
          age         = interval(DOB, date_recorded) / years(1)) |> 
   select(-DOB_day) |>
 
@@ -157,7 +157,8 @@ hp1_validation_summary =
 print(hp1_validation_summary)
 
 
-#### SAVE ----save(hp1, file = 'data/תשפה/raw_data/hp1.Rdata')
+#### SAVE ----
+save(hp1, file = 'data/תשפה/raw_data/hp1.Rdata')
 
        
        

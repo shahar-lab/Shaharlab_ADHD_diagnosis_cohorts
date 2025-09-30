@@ -103,7 +103,7 @@ diva <- diva |>
     DSM_criteria_A1 = if_else(diva_IA_symptoms >= 5, "present", "absent"),
     DSM_criteria_A2 = if_else(diva_HI_symptoms >= 5, "present", "absent"),
     DSM_criteria_B = if_else(diva_childhood_symptoms >= 3, "present", "absent"),
-    DSM_criteria_C_D = if_else(diva_function_adulthood >= 2 & diva_function_childhood >= 2, "present", "absent"),
+    DSM_criteria_C_D = if_else(diva_function_adulthood >= 2 & diva_function_childhood >= 1, "present", "absent"),
     diva_diagnosis = if_else(
       (DSM_criteria_A1 == "present" | DSM_criteria_A2 == "present") &
         DSM_criteria_B == "present" &
