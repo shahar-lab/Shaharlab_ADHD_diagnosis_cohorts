@@ -142,6 +142,10 @@ diva <- diva |>
     
     community_diagnosis_age,
     community_diagnosis_meds,
+    community_diagnosis_meds_type, 
+    community_diagnosis_meds_dosage,
+    community_diagnosis_meds_freq,
+    
     psychiatric_diagnosis,
     psychiatric_diagnosis_freetext,
     psychiatric_diagnosis_meds,

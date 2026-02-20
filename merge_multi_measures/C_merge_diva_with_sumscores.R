@@ -10,9 +10,8 @@ load('data/all_cohorts_raw_data/icar.Rdata')
 load('data/all_cohorts_raw_data/bdi.Rdata')
 load('data/all_cohorts_raw_data/stai.Rdata')
 load('data/all_cohorts_raw_data/ocir.Rdata')
-
 load('data/all_cohorts_raw_data/aq.Rdata')
-load('data/all_cohorts_raw_data/patas.Rdata')
+
 
 
 #duplicates

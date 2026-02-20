@@ -1,11 +1,10 @@
 library(readr)
 library(dplyr)
 
-
 #### CREATE DIVA RAW ####
 
 # load raw DIVA data
-diva <- read_tsv("data/תשפד/collected_data/שאלון+מקדים+++DIVA_May+30,+2025_08.59.tsv",
+diva <- read_tsv("data/תשפג/collected_data/אבחונים+-+Diva+-+V3+-+Copy_October+1,+2025_09.55_labels.tsv",
                  locale = locale(encoding = "UTF-16")) 
 diva <- diva |>
   
@@ -20,25 +19,30 @@ diva <- diva |>
   ) |>
   
   # age
-  rename(age = `DIVA-personalinfo_1`) |>
+  rename(age = Q2_1) |>
   
   # Cohort
-  mutate (cohort = "תשפד") |>
+  mutate (cohort = "תשפג") |>
   rename(date_recorded      = RecordedDate) |> 
   
   # compensation_method
-  rename(compensation_method = `DIVA-personalinfo_5`) |>
+  rename(compensation_method = Q2_5) |>
   mutate(compensation_method = recode(compensation_method, `קרדיט` = "course_credit", `תשלום` = "monetray")) |>
   
   # community and diagnostic info
-  rename(
-    community_diagnosis_age = `DIVA-diagnosis2_5`,
-    community_diagnosis_meds = `DIVA-meds1`,
-    psychiatric_diagnosis = `DIVA-insurance1`,
-    psychiatric_diagnosis_freetext = `DIVA-insurance1_1_TEXT`,
-    psychiatric_diagnosis_meds = `DIVA-insurance2`,
-    psychotic_diagnosis = `DIVA-insurance4`,
-    neurological_diagnosis = `DIVA-insurance5`
+  mutate(
+    community_diagnosis_meds = if_else(Q6 == "No" , "no", "yes") ,
+    community_diagnosis_meds_type = Q6, 
+    community_diagnosis_meds_dosage = Q7, 
+    community_diagnosis_meds_freq = Q8,
+    
+    community_diagnosis_age = Q4_5,
+    community_diagnosis_meds = Q6,
+    psychiatric_diagnosis = Q13,
+    psychiatric_diagnosis_freetext = Q13_1_TEXT,
+    psychiatric_diagnosis_meds = Q14,
+    psychotic_diagnosis = Q15,
+    neurological_diagnosis = Q16
   ) |>
   mutate(
     psychiatric_diagnosis = recode(psychiatric_diagnosis, `כן` = "yes", `לא` = "no"),
@@ -48,12 +52,12 @@ diva <- diva |>
   ) |>
   
   # exclusion criteria
-  rename(exclusion_criteria = `DIVA-insurance8`) |>
+  rename(exclusion_criteria = Q19) |>
   mutate(exclusion_criteria = recode(exclusion_criteria, `כן` = "pass", `לא` = "fail")) |>
   
   # declared_group
-  rename(declared_group = group) |>
-  mutate(declared_group = recode(declared_group, `קשב` = "ADHD", `ביקורת` = "TD")) |>
+  rename(declared_group = Q3) |>
+  mutate(declared_group = recode(declared_group, `כן` = "ADHD", `לא` = "TD")) |>
   
   # IA symptoms
   rename(
@@ -81,6 +85,17 @@ diva <- diva |>
     HI9_adulthood = `H/I 9.3`, HI9_childhood = `H/I 9.5`
   ) |>
   
+  mutate(
+    across(
+      matches("^(IA|HI)[0-9]+_(adulthood|childhood)$"),
+      ~ case_when(
+        .x == "כן" ~ 1L,
+        .x == "לא" ~ 0L,
+        TRUE       ~ NA_integer_
+      )
+    )
+  )|>
+  
   # Functional impairment
   rename(
     function_occupational_adulthood = `C1.2`, function_occupational_childhood = `C1.3`,
@@ -95,19 +110,79 @@ diva <- diva |>
   
   # DIVA summary scores and DSM criteria flags
   mutate(
-    diva_IA_symptoms = as.numeric(SC0),
-    diva_HI_symptoms = as.numeric(SC1),
-    diva_childhood_symptoms = as.numeric(SC2),
-    diva_function_adulthood = as.numeric(SC3),
-    diva_function_childhood = as.numeric(SC4),
+        
+    diva_IA_symptoms = 
+          coalesce(as.numeric(IA1_adulthood), 0) +
+          coalesce(as.numeric(IA2_adulthood), 0) +
+          coalesce(as.numeric(IA3_adulthood), 0) +
+          coalesce(as.numeric(IA4_adulthood), 0) +
+          coalesce(as.numeric(IA5_adulthood), 0) +
+          coalesce(as.numeric(IA6_adulthood), 0) +
+          coalesce(as.numeric(IA7_adulthood), 0) +
+          coalesce(as.numeric(IA8_adulthood), 0) +
+          coalesce(as.numeric(IA9_adulthood), 0),
+        
+        
+    diva_HI_symptoms =  
+          coalesce(as.numeric(HI1_adulthood), 0) +
+          coalesce(as.numeric(HI2_adulthood), 0) +
+          coalesce(as.numeric(HI3_adulthood), 0) +
+          coalesce(as.numeric(HI4_adulthood), 0) +
+          coalesce(as.numeric(HI5_adulthood), 0) +
+          coalesce(as.numeric(HI6_adulthood), 0) +
+          coalesce(as.numeric(HI7_adulthood), 0) +
+          coalesce(as.numeric(HI8_adulthood), 0) +
+          coalesce(as.numeric(HI9_adulthood), 0),
+        
+        
+    diva_childhood_symptoms = 
+          coalesce(as.numeric(IA1_childhood), 0) +
+          coalesce(as.numeric(IA2_childhood), 0) +
+          coalesce(as.numeric(IA3_childhood), 0) +
+          coalesce(as.numeric(IA4_childhood), 0) +
+          coalesce(as.numeric(IA5_childhood), 0) +
+          coalesce(as.numeric(IA6_childhood), 0) +
+          coalesce(as.numeric(IA7_childhood), 0) +
+          coalesce(as.numeric(IA8_childhood), 0) +
+          coalesce(as.numeric(IA9_childhood), 0) +
+          coalesce(as.numeric(HI1_childhood), 0) +
+          coalesce(as.numeric(HI2_childhood), 0) +
+          coalesce(as.numeric(HI3_childhood), 0) +
+          coalesce(as.numeric(HI4_childhood), 0) +
+          coalesce(as.numeric(HI5_childhood), 0) +
+          coalesce(as.numeric(HI6_childhood), 0) +
+          coalesce(as.numeric(HI7_childhood), 0) +
+          coalesce(as.numeric(HI8_childhood), 0) +
+          coalesce(as.numeric(HI9_childhood), 0),
+        
+        
+    diva_function_adulthood =   
+          coalesce(as.numeric(Discussion8_1), 0) +
+          coalesce(as.numeric(Discussion8_2), 0) +
+          coalesce(as.numeric(Discussion8_3), 0) +
+          coalesce(as.numeric(Discussion8_4), 0) +
+          coalesce(as.numeric(Discussion8_5), 0),
+        
+        
+    diva_function_childhood =   
+          coalesce(as.numeric(Discussion10_1), 0) +
+          coalesce(as.numeric(Discussion10_2), 0) +
+          coalesce(as.numeric(Discussion10_3), 0) +
+          coalesce(as.numeric(Discussion10_4), 0) +
+          coalesce(as.numeric(Discussion10_5), 0),
+      
+    
+    
     DSM_criteria_A1 = if_else(diva_IA_symptoms >= 5, "present", "absent"),
     DSM_criteria_A2 = if_else(diva_HI_symptoms >= 5, "present", "absent"),
     DSM_criteria_B = if_else(diva_childhood_symptoms >= 3, "present", "absent"),
     DSM_criteria_C_D = if_else(diva_function_adulthood >= 2 & diva_function_childhood >= 1, "present", "absent"),
+    
     diva_diagnosis = if_else(
       (DSM_criteria_A1 == "present" | DSM_criteria_A2 == "present") &
         DSM_criteria_B == "present" &
         DSM_criteria_C_D == "present", "meet_diva_criteria", "below_diva_criteria"),
+    
     diva_diagnosis_type = case_when(
       diva_diagnosis == "below_diva_criteria" ~ "below_diva_criteria",  
       diva_diagnosis == "meet_diva_criteria" & DSM_criteria_A1 == "present" & DSM_criteria_A2 == "absent" ~ "primary_inattentive",
@@ -118,9 +193,9 @@ diva <- diva |>
   ) |>
   
   # original RA-coded diagnosis and subtype
-  rename(diva_diagnosis_coded_by_RA = ADHD_decision) |>
+  rename(diva_diagnosis_coded_by_RA = Discussion12) |>
   mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `כן` = "ADHD", `לא` = "TD")) |>
-  rename(diva_diagnosis_subtype_coded_by_RA = ADHD_subtype) |>
+  rename(diva_diagnosis_subtype_coded_by_RA = Discussion13) |>
   
   select(
     subjectid,
@@ -144,6 +219,10 @@ diva <- diva |>
     compensation_method,
     community_diagnosis_age,
     community_diagnosis_meds,
+    community_diagnosis_meds_type, 
+    community_diagnosis_meds_dosage,
+    community_diagnosis_meds_freq,
+    
     psychiatric_diagnosis,
     psychiatric_diagnosis_freetext,
     psychiatric_diagnosis_meds,
@@ -179,12 +258,18 @@ diva <- diva |>
 #### VALIDATIONS ----
 
 # 1) Examine subjectid duplicates
-dup_count <- diva |>
-  count(subjectid) |>
-  filter(n > 1) |>
-  summarise(subjectid_duplicate_count = n())
-print(dup_count)
+    dup_count <- diva |>
+      count(subjectid) |>
+      filter(n > 1) |>
+      summarise(subjectid_duplicate_count = n())
+    print(dup_count)
+    
+    #diva |> group_by(subjectid) |> filter(n() > 1) |> ungroup() |> View()
 
+    # filter out a technical duplicate
+    diva = diva |> filter(!(subjectid == "ac3iLqte" & duplicated(subjectid)))
+    diva = diva |> filter(!(subjectid == "GFh03PMg" & duplicated(subjectid)))
+    
 # 2) Validate symptom sum scores consistency
 # Compute sum of individual IA/HI adulthood items
 diva_validation_counts <- diva |>
@@ -255,4 +340,4 @@ diagnosis_type_summary <- diva |>
 print(diagnosis_type_summary)
 
 #### SAVE ----
-save(diva, file = 'data/תשפד/raw_data/diva.Rdata')
+save(diva, file = 'data/תשפג/raw_data/diva.Rdata')

@@ -7,7 +7,7 @@ library(hms)
 #### CREATE ASRS RAW ####
 
 #load 
-asrs <- read_tsv("data/תשפד/collected_data/ASRS_July+1,+2025_10.50.tsv",
+asrs <- read_tsv("data/תשפג/collected_data/ASRS+בעברית_October+1,+2025_09.57_values.tsv",
                  locale = locale(encoding = "UTF-16")) 
 
 #housekeeping
@@ -24,7 +24,7 @@ asrs <- asrs |>
   ) |>
   
   #  survey data
-  mutate (cohort = "תשפד") |>
+  mutate (cohort = "תשפג") |>
   rename(date_recorded      = RecordedDate) |>   
   
   #rename asrs 
@@ -63,14 +63,11 @@ asrs <- asrs |>
   filter(Finished == 1) |>
   filter(!is.na(asrs), !is.na(asrs1)) |> 
   
-  
-  #columns to keep
-  select(subjectid,
-         cohort,date_recorded,
-         asrs, asrs_ia, asrs_hi, asrs_ia_count, asrs_hi_count,
-         asrs1, asrs2 , asrs3 , asrs4 , asrs5 , asrs6 , 
-         asrs7, asrs8 , asrs9 , asrs10 , asrs11 , asrs12 ,
-         asrs13 , asrs14 , asrs15 , asrs16 , asrs17 , asrs18)
+  select(
+    subjectid, cohort, date_recorded,
+    asrs, asrs_ia, asrs_hi, asrs_ia_count, asrs_hi_count,
+    asrs1:asrs18
+  )
 
 
 
@@ -83,7 +80,20 @@ asrs <- asrs |>
                   asrs1, asrs2 , asrs3 , asrs4 , asrs5 , asrs6 , 
                   asrs7, asrs8 , asrs9 , asrs10 , asrs11 , asrs12 ,
                   asrs13 , asrs14 , asrs15 , asrs16 , asrs17 , asrs18),
-                as.numeric))
+                as.numeric)) 
+  
+# |>
+  # mutate(
+  #   asrs      = asrs + 18,
+  #   asrs_ia   = asrs_ia + 18,
+  #   asrs_hi   = asrs_hi + 18,
+  #   asrs1  = asrs1  + 1, asrs2  = asrs2  + 1, asrs3  = asrs3  + 1,
+  #   asrs4  = asrs4  + 1, asrs5  = asrs5  + 1, asrs6  = asrs6  + 1,
+  #   asrs7  = asrs7  + 1, asrs8  = asrs8  + 1, asrs9  = asrs9  + 1,
+  #   asrs10 = asrs10 + 1, asrs11 = asrs11 + 1, asrs12 = asrs12 + 1,
+  #   asrs13 = asrs13 + 1, asrs14 = asrs14 + 1, asrs15 = asrs15 + 1,
+  #   asrs16 = asrs16 + 1, asrs17 = asrs17 + 1, asrs18 = asrs18 + 1
+  # ) 
 
 
 
@@ -96,7 +106,12 @@ asrs <- asrs |>
     summarise(subjectid_duplicate_count = n())
 
     print(dup_count)
-
+    
+    
+    asrs |> group_by(subjectid) |> filter(n() > 1) |> ungroup() |> View()
+    
+    # 2. Retain only the first line for those how complete the whole thing more then once
+    asrs = asrs |> group_by(subjectid) |> slice_min(order_by = date_recorded, n = 1) |> ungroup()
 
 # 2. Validate sumscore
     #note that reversed items where already revered in qualtrics
@@ -116,5 +131,5 @@ asrs <- asrs |>
       geom_dots() + labs(x = "ASRS Score") + theme_minimal()
 
 #### SAVE ----
-save(asrs, file = 'data/תשפד/raw_data/asrs.Rdata')
+save(asrs, file = 'data/תשפג/raw_data/asrs.Rdata')
     

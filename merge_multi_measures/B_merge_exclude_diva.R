@@ -10,8 +10,8 @@ load('data/all_cohorts_raw_data/hp1.Rdata')
 load('data/all_cohorts_raw_data/diva.Rdata')
 
 
-diva = hp1 |> select(-cohort) |>
-  left_join(diva, by = "subjectid") 
+diva = hp1  |>
+  full_join(diva |> select(-cohort), by = "subjectid") 
 
 
 save(diva, file = 'data/all_cohorts_raw_data/diva_before_exclusion.Rdata')
@@ -20,16 +20,19 @@ write.csv(diva , file =  'data/all_cohorts_raw_data/diva_before_exclusions.csv')
 #### EXCLUDE FOR DRUGS ----
 
 #count how many above drug cutoff
-diva |> group_by(declared_group) |>
+diva |> 
+  #group_by(cohort) |>
   summarise(
     above_alcohol  = sum(alcohol_use_cutoff  == "above_audit_cutoff", na.rm = TRUE),
     above_cannabis = sum(cannabis_use_cutoff == "above_cudit_cutoff", na.rm = TRUE),
     above_both     = sum(alcohol_use_cutoff  == "above_audit_cutoff" & 
-                         cannabis_use_cutoff == "above_cudit_cutoff", na.rm = TRUE)
+                           cannabis_use_cutoff == "above_cudit_cutoff", na.rm = TRUE)
   )
-#> A tibble: 1 × 3
+
+# A tibble: 1 × 3
 #> above_alcohol above_cannabis above_both
-#>      10             22          1
+#> <int>          <int>      <int>
+#> 1            12             29          2
 
 #exclude these
 diva = diva |> 
@@ -42,22 +45,20 @@ diva = diva |>
 #  filter(is.na(declared_group)) |> 
 #  View()
 
-library(yardstick)
-
 diva |> group_by(declared_group, diva_group) |> summarise(n = n())
 
 #>  declared_group diva_group     n
 #> <fct>          <fct>      <int>
-#> 1 TD             TD           154
-#>2 TD             ADHD          10
-#>3 ADHD           TD            22
-#>4 ADHD           ADHD         136
+#> 1 TD             TD           206
+#>2 TD             ADHD          11
+#>3 ADHD           TD            31
+#>4 ADHD           ADHD         166
 #>5 NA             NA            45
 #>
-#>6.09%  error for Ss that declared TD and turned out ADHD
-#>13.92% error for Ss that declared TD and turned out ADHD
+#>5.07%  error for Ss that declared TD and turned out ADHD
+#>15.73% error for Ss that declared TD and turned out ADHD
 #>
-#>the NA are thoese how droped out, mostly due to no need in course credit points.
+#>the NA are those who droped out, mostly due to no need in course credit points.
 
 
 #exclude mismatch
