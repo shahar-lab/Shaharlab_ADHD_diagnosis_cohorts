@@ -14,22 +14,22 @@ stai_date_fmt <- c("%Y-%m-%d %H:%M:%OS", "%Y/%m/%d %H:%M:%OS", "%d/%m/%Y %H:%M:%
 #### STEP 1: LOAD ----
 # Cohort-specific subjectid checks. Only process and rename when file was loaded (nrow > 0).
 
-stai_tshpg <- if (file.exists("data/תשפג/collected_data/STAI+template+-+עברית+-+Copy_October+1,+2025_10.00_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/STAI+template+-+עברית+-+Copy_October+1,+2025_10.00_values.tsv", locale = locale(encoding = "UTF-16")) |>
+stai_tshpg <- if (file.exists("data/collected_data/תשפג/STAI+template+-+עברית+-+Copy_October+1,+2025_10.00_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/STAI+template+-+עברית+-+Copy_October+1,+2025_10.00_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-stai_tshpd <- if (file.exists("data/תשפד/collected_data/STAI_July+1,+2025_11.22.tsv")) {
-  read_tsv("data/תשפד/collected_data/STAI_July+1,+2025_11.22.tsv", locale = locale(encoding = "UTF-16")) |>
+stai_tshpd <- if (file.exists("data/collected_data/תשפד/STAI_July+1,+2025_11.22.tsv")) {
+  read_tsv("data/collected_data/תשפד/STAI_July+1,+2025_11.22.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-stai_tshpe <- if (file.exists("data/תשפה/collected_data/STAI_תשפה - values.tsv")) {
-  read_tsv("data/תשפה/collected_data/STAI_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
+stai_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/STAI_תשפה - values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/STAI_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
@@ -110,9 +110,9 @@ stai <- stai |>
   rename_with(~ paste0(., "*"), any_of(paste0("SAI", sai_reversed))) |>
   rename_with(~ paste0(., "*"), any_of(paste0("TAI", tai_reversed)))
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(stai, file = "data/all_cohorts_raw_data/stai.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(stai, file = "data/raw_data/stai.Rdata")
 tryCatch(
-  write_xlsx(stai, path = "data/all_cohorts_raw_data/stai.xlsx"),
+  write_xlsx(stai, path = "data/raw_data/stai.xlsx"),
   error = function(e) warning("Could not write stai.xlsx (close file if open): ", conditionMessage(e))
 )

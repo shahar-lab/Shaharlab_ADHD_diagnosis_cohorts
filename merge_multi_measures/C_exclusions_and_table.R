@@ -4,7 +4,7 @@ library(readr)
 
 if (basename(getwd()) == "merge_multi_measures") setwd("..")
 
-load("data/all_cohorts_raw_data/df_agg.Rdata")
+load("data/raw_data/df_agg.Rdata")
 
 #### 1. Drop due to high CUDIT, high AUDIT, or both ----
 n_above_audit  <- sum(df_agg$alcohol_use_cutoff == "above_audit_cutoff", na.rm = TRUE)
@@ -62,6 +62,6 @@ sum_cols <- c(
 
 df_c_sum <- df_c |> select(any_of(sum_cols))
 library(writexl)
-write_xlsx(df_c, path = "data/all_cohorts_raw_data/df_c_all_items.xlsx")
-write_xlsx(df_c_sum, path = "data/all_cohorts_raw_data/df_c_sum_scores.xlsx")
+write_xlsx(df_c, path = "data/raw_data/df_c_all_items.xlsx")
+write_xlsx(df_c_sum, path = "data/raw_data/df_c_sum_scores.xlsx")
 

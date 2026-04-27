@@ -7,8 +7,8 @@ library(writexl)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-aq_tshpg <- if (file.exists("data/תשפג/collected_data/AQ+template+-+עברית+-+Copy_October+1,+2025_10.01_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/AQ+template+-+עברית+-+Copy_October+1,+2025_10.01_values.tsv", locale = locale(encoding = "UTF-16")) |>
+aq_tshpg <- if (file.exists("data/collected_data/תשפג/AQ+template+-+עברית+-+Copy_October+1,+2025_10.01_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/AQ+template+-+עברית+-+Copy_October+1,+2025_10.01_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(
@@ -20,8 +20,8 @@ aq_tshpg <- if (file.exists("data/תשפג/collected_data/AQ+template+-+עברי
   tibble()
 }
 
-aq_tshpd <- if (file.exists("data/תשפד/collected_data/AQ_July+9,+2025_11.56.tsv")) {
-  read_tsv("data/תשפד/collected_data/AQ_July+9,+2025_11.56.tsv", locale = locale(encoding = "UTF-16")) |>
+aq_tshpd <- if (file.exists("data/collected_data/תשפד/AQ_July+9,+2025_11.56.tsv")) {
+  read_tsv("data/collected_data/תשפד/AQ_July+9,+2025_11.56.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(
@@ -33,8 +33,8 @@ aq_tshpd <- if (file.exists("data/תשפד/collected_data/AQ_July+9,+2025_11.56.
   tibble()
 }
 
-aq_tshpe <- if (file.exists("data/תשפה/collected_data/AQ_תשפה-values.tsv")) {
-  read_tsv("data/תשפה/collected_data/AQ_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
+aq_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/AQ_תשפה-values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/AQ_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(
@@ -128,9 +128,9 @@ aq <- aq |>
     all_of(aq_item_names)
   )
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(aq, file = "data/all_cohorts_raw_data/aq.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(aq, file = "data/raw_data/aq.Rdata")
 tryCatch(
-  write_xlsx(aq, path = "data/all_cohorts_raw_data/aq.xlsx"),
+  write_xlsx(aq, path = "data/raw_data/aq.xlsx"),
   error = function(e) warning("Could not write aq.xlsx (close file if open): ", conditionMessage(e))
 )

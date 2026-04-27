@@ -7,14 +7,25 @@ library(writexl)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-pqb <- if (file.exists("data/תשפד/collected_data/PQ-B_July+1,+2025_11.21.tsv")) {
-  read_tsv("data/תשפד/collected_data/PQ-B_July+1,+2025_11.21.tsv", locale = locale(encoding = "UTF-16")) |>
+pqb_tshpd <- if (file.exists("data/collected_data/תשפד/PQ-B_July+1,+2025_11.21.tsv")) {
+  read_tsv("data/collected_data/תשפד/PQ-B_July+1,+2025_11.21.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else {
   tibble()
 }
+
+pqb_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/PQ-B_תשפה-values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/PQ-B_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
+    slice(-1, -2) |>
+    rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
+    filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
+} else {
+  tibble()
+}
+
+pqb <- bind_rows(pqb_tshpd, pqb_tshpe)
 
 #### STEP 2: DATE ----
 pqb <- pqb |>
@@ -72,9 +83,9 @@ pqb <- pqb |>
 pqb <- pqb |>
   select(subjectid, date_recorded, pqb, pqb_distress, any_of(paste0("pqb", 1:21)), any_of(paste0("pqb", 1:21, "_d")))
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(pqb, file = "data/all_cohorts_raw_data/pqb.Rdata")
+
+save(pqb, file = "data/raw_data/pqb.Rdata")
 tryCatch(
-  write_xlsx(pqb, path = "data/all_cohorts_raw_data/pqb.xlsx"),
+  write_xlsx(pqb, path = "data/raw_data/pqb.xlsx"),
   error = function(e) warning("Could not write pqb.xlsx (close file if open): ", conditionMessage(e))
 )

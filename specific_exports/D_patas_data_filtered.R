@@ -4,13 +4,13 @@ library(dplyr)
 #### ADDING PATAS ----
 
 # loading DIVA for תשפג תשפד תשפה
-load('data/all_cohorts_raw_data/diva_after_exclusions_with_sumscores.Rdata')
+load('data/raw_data/diva_after_exclusions_with_sumscores.Rdata')
 df = df |> filter(diva_group == "ADHD")
 
 
 
 # first adding תשפד תשפה
-load('data/all_cohorts_raw_data/patas.Rdata')
+load('data/raw_data/patas.Rdata')
 
 df = df |>
   left_join(patas, by = "subjectid") 
@@ -20,7 +20,7 @@ rm(patas)
 
 df = df |> filter(!(is.na(patas)))
 
-write.csv(df , file =  'data/all_cohorts_raw_data/patas_analysis_data.csv')
+write.csv(df , file =  'data/raw_data/patas_analysis_data.csv')
 
 #### TAL תשפג DATA ---
 # now adding tal's data that is mostly for תשפג

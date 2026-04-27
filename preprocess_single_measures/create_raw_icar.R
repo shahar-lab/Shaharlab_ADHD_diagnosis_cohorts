@@ -9,22 +9,22 @@ icar_cols <- c("ICAR_ln1", "ICAR_ln2", "ICAR_ln3", "ICAR_ln4", "ICAR_mx1", "ICAR
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-icar_tshpg <- if (file.exists("data/תשפג/collected_data/ICAR16+Hebrew+-+Copy_October+1,+2025_10.03_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/ICAR16+Hebrew+-+Copy_October+1,+2025_10.03_values.tsv", locale = locale(encoding = "UTF-16")) |>
+icar_tshpg <- if (file.exists("data/collected_data/תשפג/ICAR16+Hebrew+-+Copy_October+1,+2025_10.03_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/ICAR16+Hebrew+-+Copy_October+1,+2025_10.03_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-icar_tshpd <- if (file.exists("data/תשפד/collected_data/ICAR16_July+1,+2025_11.17.tsv")) {
-  read_tsv("data/תשפד/collected_data/ICAR16_July+1,+2025_11.17.tsv", locale = locale(encoding = "UTF-16")) |>
+icar_tshpd <- if (file.exists("data/collected_data/תשפד/ICAR16_July+1,+2025_11.17.tsv")) {
+  read_tsv("data/collected_data/תשפד/ICAR16_July+1,+2025_11.17.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-icar_tshpe <- if (file.exists("data/תשפה/collected_data/ICAR16_תשפה - values.tsv")) {
-  read_tsv("data/תשפה/collected_data/ICAR16_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
+icar_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/ICAR16_תשפה - values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/ICAR16_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
@@ -79,9 +79,9 @@ icar <- icar |>
 icar <- icar |>
   select(subjectid, date_recorded, icar, icar_sum, all_of(icar_cols))
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(icar, file = "data/all_cohorts_raw_data/icar.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(icar, file = "data/raw_data/icar.Rdata")
 tryCatch(
-  write_xlsx(icar, path = "data/all_cohorts_raw_data/icar.xlsx"),
+  write_xlsx(icar, path = "data/raw_data/icar.xlsx"),
   error = function(e) warning("Could not write icar.xlsx (close file if open): ", conditionMessage(e))
 )

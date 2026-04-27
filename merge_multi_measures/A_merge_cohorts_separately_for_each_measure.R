@@ -52,6 +52,6 @@ df_agg <- hp1 |> dedup_by_subject() |>
 if (nrow(patas) > 0) df_agg <- df_agg |> left_join(patas |> dedup_by_subject() |> select(-any_of(drop_from_join)), by = "subjectid", suffix = c("", "_patas"))
 if (nrow(pqb) > 0) df_agg <- df_agg |> left_join(pqb |> dedup_by_subject() |> select(-any_of(drop_from_join)), by = "subjectid", suffix = c("", "_pqb"))
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(df_agg, file = "data/all_cohorts_raw_data/df_agg.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(df_agg, file = "data/raw_data/df_agg.Rdata")
 

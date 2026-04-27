@@ -2,15 +2,15 @@
 library(dplyr)
 
 #### ADD SUMSCORE ----
-load('data/all_cohorts_raw_data/diva_after_exclusion.Rdata')
+load('data/raw_data/diva_after_exclusion.Rdata')
 
-load('data/all_cohorts_raw_data/asrs.Rdata')
-load('data/all_cohorts_raw_data/wurs.Rdata')
-load('data/all_cohorts_raw_data/icar.Rdata')
-load('data/all_cohorts_raw_data/bdi.Rdata')
-load('data/all_cohorts_raw_data/stai.Rdata')
-load('data/all_cohorts_raw_data/ocir.Rdata')
-load('data/all_cohorts_raw_data/aq.Rdata')
+load('data/raw_data/asrs.Rdata')
+load('data/raw_data/wurs.Rdata')
+load('data/raw_data/icar.Rdata')
+load('data/raw_data/bdi.Rdata')
+load('data/raw_data/stai.Rdata')
+load('data/raw_data/ocir.Rdata')
+load('data/raw_data/aq.Rdata')
 
 
 
@@ -29,6 +29,6 @@ df = diva |>
   left_join(aq  |> select(subjectid, aq), by = "subjectid") 
 
 
-write.csv(df , file =  'data/all_cohorts_raw_data/diva_after_exclusions_with_sumscores.csv')
-save(df , file =  'data/all_cohorts_raw_data/diva_after_exclusions_with_sumscores.Rdata')
+write.csv(df , file =  'data/raw_data/diva_after_exclusions_with_sumscores.csv')
+save(df , file =  'data/raw_data/diva_after_exclusions_with_sumscores.Rdata')
 

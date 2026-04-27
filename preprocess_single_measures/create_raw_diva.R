@@ -1,12 +1,14 @@
 library(readr)
 library(dplyr)
+library(lubridate)
+library(writexl)
 
 #### CREATE DIVA RAW ####
 
 diva_config <- list(
-  תשפג = list(input = "data/תשפג/collected_data/אבחונים+-+Diva+-+V3+-+Copy_October+1,+2025_09.55_labels.tsv", subjectid_nchar = 8, subjectid_rename = NULL),
-  תשפד = list(input = "data/תשפד/collected_data/שאלון+מקדים+++DIVA_May+30,+2025_08.59.tsv", subjectid_nchar = 8, subjectid_rename = NULL),
-  תשפה = list(input = "data/תשפה/collected_data/שאלון_מקדים_DIVA_תשפה-values.tsv", subjectid_nchar = 6, subjectid_rename = "shahar_id")
+  תשפג = list(input = "data/collected_data/תשפג/אבחונים+-+Diva+-+V3+-+Copy_October+1,+2025_09.55_labels.tsv", subjectid_nchar = 8, subjectid_rename = NULL),
+  תשפד = list(input = "data/collected_data/תשפד/שאלון+מקדים+++DIVA_May+30,+2025_08.59.tsv", subjectid_nchar = 8, subjectid_rename = NULL),
+  תשפה = list(input = "data/collected_data/תשפה_תשפו/שאלון_מקדים_DIVA_תשפה-values.tsv", subjectid_nchar = 6, subjectid_rename = "shahar_id")
 )
 
 #### STEP 1: LOAD ----
@@ -34,11 +36,12 @@ for (cohort_name in names(diva_list)) {
 
   if (cohort_name == "תשפג") {
     diva <- diva |>
-      rename(age = Q2_1) |>
+      rename(group_declared = Q1, age = Q2_1) |>
       
       rename(compensation_method = Q2_5) |>
       mutate(compensation_method = recode(compensation_method, `קרדיט` = "course_credit", `תשלום` = "monetray")) |>
       mutate(
+        group = recode(group_declared, `ביקורת` = "TD", `קשב` = "ADHD"),
         community_diagnosis_meds = if_else(Q6 == "No", "no", "yes"),
         community_diagnosis_meds_type = Q6,
         community_diagnosis_meds_dosage = Q7,
@@ -59,8 +62,6 @@ for (cohort_name in names(diva_list)) {
       ) |>
       rename(exclusion_criteria = Q19) |>
       mutate(exclusion_criteria = recode(exclusion_criteria, `כן` = "pass", `לא` = "fail")) |>
-      rename(declared_group = Q3) |>
-      mutate(declared_group = recode(declared_group, `כן` = "ADHD", `לא` = "TD")) |>
       rename(
         IA1_adulthood = `A1.3`, IA1_childhood = `A1.5`,
         IA2_adulthood = `A2.3`, IA2_childhood = `A2.5`,
@@ -175,7 +176,7 @@ for (cohort_name in names(diva_list)) {
       mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `כן` = "ADHD", `לא` = "TD")) |>
       rename(diva_diagnosis_subtype_coded_by_RA = Discussion13) |>
       select(
-        subjectid, date_recorded, age, exclusion_criteria, declared_group,
+        subjectid, date_recorded, age, exclusion_criteria,
         diva_IA_symptoms, diva_HI_symptoms, diva_childhood_symptoms, diva_function_adulthood, diva_function_childhood,
         DSM_criteria_A1, DSM_criteria_A2, DSM_criteria_B, DSM_criteria_C_D, diva_diagnosis, diva_diagnosis_type,
         compensation_method, community_diagnosis_age, community_diagnosis_meds, community_diagnosis_meds_type,
@@ -188,18 +189,18 @@ for (cohort_name in names(diva_list)) {
       mutate(
         across(starts_with("IA"), as.numeric),
         across(starts_with("HI"), as.numeric),
-        declared_group = factor(declared_group, levels = c("TD", "ADHD")),
         diva_diagnosis = factor(diva_diagnosis, levels = c("below_diva_criteria", "meet_diva_criteria")),
         diva_diagnosis_type = factor(diva_diagnosis_type, levels = c("below_diva_criteria", "primary_inattentive", "primary_hyperactive/impulsive", "combined"))
       )
 
   } else if (cohort_name == "תשפד") {
     diva <- diva |>
-      rename(age = `DIVA-personalinfo_1`) |>
+      rename(group_declared = group, age = `DIVA-personalinfo_1`) |>
       
       rename(compensation_method = `DIVA-personalinfo_5`) |>
       mutate(compensation_method = recode(compensation_method, `קרדיט` = "course_credit", `תשלום` = "monetray")) |>
       mutate(
+        group_declared = recode(group_declared, `ביקורת` = "TD", `קשב` = "ADHD"),
         community_diagnosis_age = `DIVA-diagnosis2_5`,
         community_diagnosis_meds = if_else(`DIVA-meds1` == "No", "no", "yes"),
         community_diagnosis_meds_type = `DIVA-meds1`,
@@ -219,8 +220,6 @@ for (cohort_name in names(diva_list)) {
       ) |>
       rename(exclusion_criteria = `DIVA-insurance8`) |>
       mutate(exclusion_criteria = recode(exclusion_criteria, `כן` = "pass", `לא` = "fail")) |>
-      rename(declared_group = group) |>
-      mutate(declared_group = recode(declared_group, `קשב` = "ADHD", `ביקורת` = "TD")) |>
       rename(
         IA1_adulthood = `A1.3`, IA1_childhood = `A1.5`,
         IA2_adulthood = `A2.3`, IA2_childhood = `A2.5`,
@@ -279,7 +278,7 @@ for (cohort_name in names(diva_list)) {
       mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `כן` = "ADHD", `לא` = "TD")) |>
       rename(diva_diagnosis_subtype_coded_by_RA = ADHD_subtype) |>
       select(
-        subjectid, date_recorded, age, exclusion_criteria, declared_group,
+        subjectid, date_recorded, age, exclusion_criteria,
         diva_IA_symptoms, diva_HI_symptoms, diva_childhood_symptoms, diva_function_adulthood, diva_function_childhood,
         DSM_criteria_A1, DSM_criteria_A2, DSM_criteria_B, DSM_criteria_C_D, diva_diagnosis, diva_diagnosis_type,
         compensation_method, community_diagnosis_age, community_diagnosis_meds, community_diagnosis_meds_type,
@@ -296,15 +295,14 @@ for (cohort_name in names(diva_list)) {
         across(starts_with("HI"), as.numeric)
       ) |>
       mutate(
-        declared_group = factor(declared_group, levels = c("TD", "ADHD")),
         diva_diagnosis = factor(diva_diagnosis, levels = c("below_diva_criteria", "meet_diva_criteria")),
         diva_diagnosis_type = factor(diva_diagnosis_type, levels = c("below_diva_criteria", "primary_inattentive", "primary_hyperactive/impulsive", "combined"))
       )
 
   } else if (cohort_name == "תשפה") {
     diva <- diva |>
-      rename(age = `DIVA-personalinfo_1`) |>
-      rename(
+      rename(group_declared = group, age = `DIVA-personalinfo_1`) |>
+      rename( 
         community_diagnosis_age = `DIVA-diagnosis2_5`,
         community_diagnosis_meds = `DIVA-meds1`,
         community_diagnosis_meds_type = `DIVA-meds2`,
@@ -316,10 +314,9 @@ for (cohort_name in names(diva_list)) {
         psychiatric_diagnosis_meds_type = `DIVA-insurance2_1_TEXT`
       ) |>
       mutate(
+        group_declared = recode(group_declared, `2` = "TD", `1` = "ADHD"),
         psychiatric_diagnosis_meds = recode(psychiatric_diagnosis_meds, `כן` = "yes", `לא` = "no"),
       ) |>
-      rename(declared_group = group) |>
-      mutate(declared_group = recode(declared_group, `קשב` = "ADHD", `ביקורת` = "TD")) |>
       rename(
         IA1_adulthood = `A1_decision`, IA1_childhood = `A1_decision_child`,
         IA2_adulthood = `A2_decision`, IA2_childhood = `A2_decision_child`,
@@ -378,7 +375,7 @@ for (cohort_name in names(diva_list)) {
       mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `1` = "ADHD", `0` = "TD")) |>
       rename(diva_diagnosis_subtype_coded_by_RA = ADHD_subtype) |>
       select(
-        subjectid, date_recorded, age, declared_group,
+        subjectid, date_recorded, age,
         diva_IA_symptoms, diva_HI_symptoms, diva_childhood_symptoms, diva_function_adulthood, diva_function_childhood,
         DSM_criteria_A1, DSM_criteria_A2, DSM_criteria_B, DSM_criteria_C_D, diva_diagnosis, diva_diagnosis_type,
         community_diagnosis_age, community_diagnosis_meds, community_diagnosis_meds_type,
@@ -396,7 +393,6 @@ for (cohort_name in names(diva_list)) {
         across(starts_with("HI"), as.numeric)
       ) |>
       mutate(
-        declared_group = factor(declared_group, levels = c("TD", "ADHD")),
         diva_diagnosis = factor(diva_diagnosis, levels = c("below_diva_criteria", "meet_diva_criteria")),
         diva_diagnosis_type = factor(diva_diagnosis_type, levels = c("below_diva_criteria", "primary_inattentive", "primary_hyperactive/impulsive", "combined"))
       )
@@ -440,11 +436,11 @@ keep_first_entry_with_data <- function(df) {
   df |>
     mutate(
       .has_data = rowSums(!is.na(pick(all_of(data_cols)))) > 0,
-      .date_order = as.POSIXct(
+      .date_order = parse_date_time(
         as.character(date_recorded),
-        tz = "UTC",
-        tryFormats = c("%Y-%m-%d %H:%M:%OS", "%Y/%m/%d %H:%M:%OS", "%d/%m/%Y %H:%M:%OS", "%d/%m/%Y %H:%M", "%m/%d/%Y %I:%M:%OS %p")
-      )
+        orders = c("ymd HMS", "ymd HM", "dmy HMS", "dmy HM", "mdy HMS", "mdy HM", "ymd", "dmy"),
+        quiet = TRUE
+      ) |> as.POSIXct(tz = "UTC")
     ) |>
     arrange(subjectid, desc(.has_data), .date_order) |>
     group_by(subjectid) |>
@@ -453,10 +449,87 @@ keep_first_entry_with_data <- function(df) {
     select(-.has_data, -.date_order)
 }
 
-diva <- keep_first_entry_with_data(diva)
+diva <- keep_first_entry_with_data(diva) |>
+  select(
+    subjectid,
+    date_recorded,
+    exclusion_criteria,
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(diva, file = 'data/all_cohorts_raw_data/diva.Rdata')
+    community_diagnosis_age,
+    community_diagnosis_meds,
+    community_diagnosis_meds_type,
+    community_diagnosis_meds_dosage,
+    community_diagnosis_meds_freq,
+    psychiatric_diagnosis,
+    psychiatric_diagnosis_freetext,
+    psychiatric_diagnosis_meds,
+    psychotic_diagnosis,
+    neurological_diagnosis,
+    diva_language,
+    diva_diagnosis,
+    diva_diagnosis_type,
+    diva_IA_symptoms,
+    diva_HI_symptoms,
+    diva_childhood_symptoms,
+    diva_function_adulthood,
+    diva_function_childhood,
+    DSM_criteria_A1,
+    DSM_criteria_A2,
+    DSM_criteria_B,
+    DSM_criteria_C_D,
+    diva_diagnosis_coded_by_RA,
+    diva_diagnosis_subtype_coded_by_RA,
+    IA1_adulthood,
+    IA1_childhood,
+    IA2_adulthood,
+    IA2_childhood,
+    IA3_adulthood,
+    IA3_childhood,
+    IA4_adulthood,
+    IA4_childhood,
+    IA5_adulthood,
+    IA5_childhood,
+    IA6_adulthood,
+    IA6_childhood,
+    IA7_adulthood,
+    IA7_childhood,
+    IA8_adulthood,
+    IA8_childhood,
+    IA9_adulthood,
+    IA9_childhood,
+    HI1_adulthood,
+    HI1_childhood,
+    HI2_adulthood,
+    HI2_childhood,
+    HI3_adulthood,
+    HI3_childhood,
+    HI4_adulthood,
+    HI4_childhood,
+    HI5_adulthood,
+    HI5_childhood,
+    HI6_adulthood,
+    HI6_childhood,
+    HI7_adulthood,
+    HI7_childhood,
+    HI8_adulthood,
+    HI8_childhood,
+    HI9_adulthood,
+    HI9_childhood,
+    function_occupational_adulthood,
+    function_occupational_childhood,
+    function_family_adulthood,
+    function_family_childhood,
+    function_social_adulthood,
+    function_social_childhood,
+    function_leisure_adulthood,
+    function_leisure_childhood,
+    function_selfimage_adulthood,
+    function_selfimage_childhood
+  )
+
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(diva, file = "data/raw_data/diva.Rdata")
+write_xlsx(diva, path = "data/raw_data/diva.xlsx")
 
 
 

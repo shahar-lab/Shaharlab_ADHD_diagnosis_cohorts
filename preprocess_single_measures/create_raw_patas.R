@@ -10,15 +10,15 @@ patas_reversed_items <- c(10, 12)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-patas_tshpd <- if (file.exists("data/תשפד/collected_data/PATAS_July+1,+2025_11.20.tsv")) {
-  read_tsv("data/תשפד/collected_data/PATAS_July+1,+2025_11.20.tsv", locale = locale(encoding = "UTF-16")) |>
+patas_tshpd <- if (file.exists("data/collected_data/תשפד/PATAS_July+1,+2025_11.20.tsv")) {
+  read_tsv("data/collected_data/תשפד/PATAS_July+1,+2025_11.20.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-patas_tshpe <- if (file.exists("data/תשפה/collected_data/PATAS_תשפה-values.tsv")) {
-  read_tsv("data/תשפה/collected_data/PATAS_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
+patas_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/PATAS_תשפה-values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/PATAS_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
@@ -73,9 +73,9 @@ patas <- patas |>
 patas <- patas |>
   select(subjectid, date_recorded, patas_sum, all_of(patas_item_names))
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(patas, file = "data/all_cohorts_raw_data/patas.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(patas, file = "data/raw_data/patas.Rdata")
 tryCatch(
-  write_xlsx(patas, path = "data/all_cohorts_raw_data/patas.xlsx"),
+  write_xlsx(patas, path = "data/raw_data/patas.xlsx"),
   error = function(e) warning("Could not write patas.xlsx (close file if open): ", conditionMessage(e))
 )

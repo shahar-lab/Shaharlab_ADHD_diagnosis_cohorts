@@ -7,8 +7,8 @@ library(writexl)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-bdi_tshpg <- if (file.exists("data/תשפג/collected_data/BDI+-+עברית+template+-+Copy_October+1,+2025_09.59_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/BDI+-+עברית+template+-+Copy_October+1,+2025_09.59_values.tsv", locale = locale(encoding = "UTF-16")) |>
+bdi_tshpg <- if (file.exists("data/collected_data/תשפג/BDI+-+עברית+template+-+Copy_October+1,+2025_09.59_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/BDI+-+עברית+template+-+Copy_October+1,+2025_09.59_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(
@@ -20,8 +20,8 @@ bdi_tshpg <- if (file.exists("data/תשפג/collected_data/BDI+-+עברית+temp
   tibble()
 }
 
-bdi_tshpd <- if (file.exists("data/תשפד/collected_data/BDI_July+1,+2025_10.58.tsv")) {
-  read_tsv("data/תשפד/collected_data/BDI_July+1,+2025_10.58.tsv", locale = locale(encoding = "UTF-16")) |>
+bdi_tshpd <- if (file.exists("data/collected_data/תשפד/BDI_July+1,+2025_10.58.tsv")) {
+  read_tsv("data/collected_data/תשפד/BDI_July+1,+2025_10.58.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(
@@ -33,8 +33,8 @@ bdi_tshpd <- if (file.exists("data/תשפד/collected_data/BDI_July+1,+2025_10.5
   tibble()
 }
 
-bdi_tshpe <- if (file.exists("data/תשפה/collected_data/BDI_תשפה-values.tsv")) {
-  read_tsv("data/תשפה/collected_data/BDI_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
+bdi_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/BDI_תשפה-values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/BDI_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(
@@ -90,9 +90,9 @@ bdi <- bdi |>
 bdi <- bdi |>
   select(subjectid, date_recorded, bdi, bdi_sum, BDI1:BDI21)
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(bdi, file = "data/all_cohorts_raw_data/bdi.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(bdi, file = "data/raw_data/bdi.Rdata")
 tryCatch(
-  write_xlsx(bdi, path = "data/all_cohorts_raw_data/bdi.xlsx"),
+  write_xlsx(bdi, path = "data/raw_data/bdi.xlsx"),
   error = function(e) warning("Could not write bdi.xlsx (close file if open): ", conditionMessage(e))
 )

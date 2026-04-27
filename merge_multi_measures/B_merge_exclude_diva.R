@@ -6,16 +6,16 @@ library(dplyr)
 
 #### MERGE DIVA and HP1  ----
 
-load('data/all_cohorts_raw_data/hp1.Rdata')
-load('data/all_cohorts_raw_data/diva.Rdata')
+load('data/raw_data/hp1.Rdata')
+load('data/raw_data/diva.Rdata')
 
 
 diva = hp1  |>
   full_join(diva |> select(-cohort), by = "subjectid") 
 
 
-save(diva, file = 'data/all_cohorts_raw_data/diva_before_exclusion.Rdata')
-write.csv(diva , file =  'data/all_cohorts_raw_data/diva_before_exclusions.csv')
+save(diva, file = 'data/raw_data/diva_before_exclusion.Rdata')
+write.csv(diva , file =  'data/raw_data/diva_before_exclusions.csv')
 
 #### EXCLUDE FOR DRUGS ----
 
@@ -65,5 +65,5 @@ diva |> group_by(declared_group, diva_group) |> summarise(n = n())
 diva <- diva |> 
   filter(declared_group == diva_group)
 
-save(diva, file = 'data/all_cohorts_raw_data/diva_after_exclusion.Rdata')
+save(diva, file = 'data/raw_data/diva_after_exclusion.Rdata')
 

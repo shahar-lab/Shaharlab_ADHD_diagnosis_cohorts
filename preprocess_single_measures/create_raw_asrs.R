@@ -7,8 +7,8 @@ library(writexl)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-asrs_tshpg <- if (file.exists("data/תשפג/collected_data/ASRS+בעברית_October+1,+2025_09.57_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/ASRS+בעברית_October+1,+2025_09.57_values.tsv", locale = locale(encoding = "UTF-16")) |>
+asrs_tshpg <- if (file.exists("data/collected_data/תשפג/ASRS+בעברית_October+1,+2025_09.57_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/ASRS+בעברית_October+1,+2025_09.57_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(
@@ -20,8 +20,8 @@ asrs_tshpg <- if (file.exists("data/תשפג/collected_data/ASRS+בעברית_Oc
   tibble()
 }
 
-asrs_tshpd <- if (file.exists("data/תשפד/collected_data/ASRS_July+1,+2025_10.50.tsv")) {
-  read_tsv("data/תשפד/collected_data/ASRS_July+1,+2025_10.50.tsv", locale = locale(encoding = "UTF-16")) |>
+asrs_tshpd <- if (file.exists("data/collected_data/תשפד/ASRS_July+1,+2025_10.50.tsv")) {
+  read_tsv("data/collected_data/תשפד/ASRS_July+1,+2025_10.50.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(
@@ -33,8 +33,8 @@ asrs_tshpd <- if (file.exists("data/תשפד/collected_data/ASRS_July+1,+2025_10
   tibble()
 }
 
-asrs_tshpe <- if (file.exists("data/תשפה/collected_data/ASRS_תשפה-values.tsv")) {
-  read_tsv("data/תשפה/collected_data/ASRS_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
+asrs_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/ASRS_תשפה-values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/ASRS_תשפה-values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(
@@ -127,9 +127,9 @@ asrs <- asrs |>
     starts_with("asrs_dsm_")
   )
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(asrs, file = "data/all_cohorts_raw_data/asrs.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(asrs, file = "data/raw_data/asrs.Rdata")
 tryCatch(
-  write_xlsx(asrs, path = "data/all_cohorts_raw_data/asrs.xlsx"),
+  write_xlsx(asrs, path = "data/raw_data/asrs.xlsx"),
   error = function(e) warning("Could not write asrs.xlsx (close file if open): ", conditionMessage(e))
 )

@@ -4,7 +4,7 @@ library(dplyr)
 #### ADDING PATAS ----
 
 # loading DIVA for תשפג תשפד תשפה
-load('data/all_cohorts_raw_data/diva_before_exclusion.Rdata')
+load('data/raw_data/diva_before_exclusion.Rdata')
 
 df = diva 
 df = df %>%
@@ -39,5 +39,5 @@ df = df |> select(subjectid, age, gender, diva_IA_symptoms, diva_HI_symptoms,
 
 
 
-write.csv(df , file =  'data/all_cohorts_raw_data/נתונים_לעידו_מלול.csv')
+write.csv(df , file =  'data/raw_data/נתונים_לעידו_מלול.csv')
 

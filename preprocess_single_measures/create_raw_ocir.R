@@ -15,22 +15,22 @@ ocir_neutralizing_items <- c(4, 10, 16)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-ocir_tshpg <- if (file.exists("data/תשפג/collected_data/OCI-R_October+1,+2025_10.05_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/OCI-R_October+1,+2025_10.05_values.tsv", locale = locale(encoding = "UTF-16")) |>
+ocir_tshpg <- if (file.exists("data/collected_data/תשפג/OCI-R_October+1,+2025_10.05_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/OCI-R_October+1,+2025_10.05_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-ocir_tshpd <- if (file.exists("data/תשפד/collected_data/OCI-R_July+1,+2025_11.19.tsv")) {
-  read_tsv("data/תשפד/collected_data/OCI-R_July+1,+2025_11.19.tsv", locale = locale(encoding = "UTF-16")) |>
+ocir_tshpd <- if (file.exists("data/collected_data/תשפד/OCI-R_July+1,+2025_11.19.tsv")) {
+  read_tsv("data/collected_data/תשפד/OCI-R_July+1,+2025_11.19.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-ocir_tshpe <- if (file.exists("data/תשפה/collected_data/OCI-R_תשפה - values.tsv")) {
-  read_tsv("data/תשפה/collected_data/OCI-R_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
+ocir_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/OCI-R_תשפה - values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/OCI-R_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
@@ -169,9 +169,9 @@ ocir <- ocir |>
     ocir1:ocir18
   )
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(ocir, file = "data/all_cohorts_raw_data/ocir.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(ocir, file = "data/raw_data/ocir.Rdata")
 tryCatch(
-  write_xlsx(ocir, path = "data/all_cohorts_raw_data/ocir.xlsx"),
+  write_xlsx(ocir, path = "data/raw_data/ocir.xlsx"),
   error = function(e) warning("Could not write ocir.xlsx (close file if open): ", conditionMessage(e))
 )

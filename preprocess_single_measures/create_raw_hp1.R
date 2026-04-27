@@ -5,7 +5,6 @@ library(dplyr)
 library(lubridate)
 library(writexl)
 source("preprocess_single_measures/parse_cohort_date.R")
-source("preprocess_single_measures/add_ses_to_df.R")
 
 #### CREATE HP1 RAW ####
 
@@ -33,8 +32,8 @@ keep_first_entry_with_data <- function(df) {
 # Validate shaharID
 # Validate and generate cohort and date_recorded variables
 
-hp1_tshpg <- if (file.exists("data/תשפג/collected_data/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_October+1,+2025_09.52__value.tsv")) {
-  read_tsv("data/תשפג/collected_data/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_October+1,+2025_09.52__value.tsv", locale = locale(encoding = "UTF-16")) |>
+hp1_tshpg <- if (file.exists("data/collected_data/תשפג/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_October+1,+2025_09.52__value.tsv")) {
+  read_tsv("data/collected_data/תשפג/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_October+1,+2025_09.52__value.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE)) |>
@@ -44,8 +43,8 @@ hp1_tshpg <- if (file.exists("data/תשפג/collected_data/דמוגרפי,+EHI,+
     )
 } else { tibble() }
 
-hp1_tshpd <- if (file.exists("data/תשפד/collected_data/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_May+31,+2025_13.39.tsv")) {
-  read_tsv("data/תשפד/collected_data/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_May+31,+2025_13.39.tsv", locale = locale(encoding = "UTF-16")) |>
+hp1_tshpd <- if (file.exists("data/collected_data/תשפד/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_May+31,+2025_13.39.tsv")) {
+  read_tsv("data/collected_data/תשפד/דמוגרפי,+EHI,+AUDIT,+CUDIT-R_May+31,+2025_13.39.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE)) |>
@@ -55,8 +54,8 @@ hp1_tshpd <- if (file.exists("data/תשפד/collected_data/דמוגרפי,+EHI,+
     )
 } else { tibble() }
 
-hp1_tshpe <- if (file.exists("data/תשפה/collected_data/home-pack-01_תשפה - labels.tsv")) {
-  read_tsv("data/תשפה/collected_data/home-pack-01_תשפה - labels.tsv", locale = locale(encoding = "UTF-16")) |>
+hp1_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/home-pack-01_תשפה - labels.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/home-pack-01_תשפה - labels.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = `shahar_id...18`, date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE)) |>
@@ -116,9 +115,9 @@ hp1 <- bind_rows(hp1_tshpg, hp1_tshpd, hp1_tshpe) |>
   mutate(across(c(age, EHI_score, EHI1, EHI2, EHI3, EHI4, CUDIT, CUDIT1:CUDIT8, AUDIT, AUDIT1:AUDIT10), invalid_numeric)) |>
   mutate(
     EHI_hand_dominance = case_when(
-      EHI_score <= -61 ~ "Left handers",
-      EHI_score >= 61 ~ "Right handers",
-      EHI_score > -61 & EHI_score < 61 ~ "Mixed handers",
+      EHI_score <= -61 ~ "Left",
+      EHI_score >= 61 ~ "Right",
+      EHI_score > -61 & EHI_score < 61 ~ "Mixed",
       TRUE ~ NA_character_
     )
   ) |>
@@ -127,6 +126,8 @@ hp1 <- bind_rows(hp1_tshpg, hp1_tshpd, hp1_tshpe) |>
     cannabis_use_cutoff = if_else(CUDIT < 8, "below_cudit_cutoff", "above_cudit_cutoff")
   ) |>
   mutate(
+    education_raw = as.character(education),
+    vision_correction_raw = as.character(vision_correction),
     education = trimws(tolower(as.character(education))),
     education = case_when(
       is.na(education) | education == "" | education == "na" ~ NA_character_,
@@ -152,14 +153,13 @@ hp1 <- bind_rows(hp1_tshpg, hp1_tshpd, hp1_tshpe) |>
       TRUE ~ NA_character_
     )
   ) |>
-  add_ses_to_df_by_hebrew(city_hebrew_col = "place_of_residence_until12yo", ses_path = "data/ses_cbs_2006.xls") |>
-  select(subjectid, cohort, date_recorded, primary_lang, age, gender, EHI_hand_dominance, EHI_score, EHI1, EHI2, EHI3, EHI4, AUDIT, CUDIT, education, place_of_residence_until12yo, city_hebrew, city_english, SES_rank, SES_cluster, vision_correction, AUDIT1:AUDIT10, CUDIT_USE, CUDIT1:CUDIT8, alcohol_use_cutoff, cannabis_use_cutoff)
+  select(subjectid, cohort, date_recorded, age, gender, education,  place_of_residence_until12yo,   EHI_hand_dominance, EHI_score, EHI1, EHI2, EHI3, EHI4, AUDIT, CUDIT, alcohol_use_cutoff, cannabis_use_cutoff, AUDIT1:AUDIT10, CUDIT_USE, CUDIT1:CUDIT8)
 
 #### STEP 4: HANDLE SHAHARID DUPLICATES ----
 # Keep first entry that has data
 
 hp1 <- keep_first_entry_with_data(hp1)
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(hp1, file = "data/all_cohorts_raw_data/hp1.Rdata")
-write_xlsx(hp1, path = "data/all_cohorts_raw_data/hp1.xlsx")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(hp1, file = "data/raw_data/hp1.Rdata")
+write_xlsx(hp1, path = "data/raw_data/hp1.xlsx")

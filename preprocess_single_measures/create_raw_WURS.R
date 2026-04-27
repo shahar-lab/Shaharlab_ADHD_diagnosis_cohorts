@@ -7,22 +7,22 @@ library(writexl)
 #### STEP 1: LOAD ----
 # Validate shaharID and date_recorded (keep cohort-specific checks)
 
-wurs_tshpg <- if (file.exists("data/תשפג/collected_data/WURS+-+עברית+-+template+-+Copy_October+1,+2025_10.06_values.tsv")) {
-  read_tsv("data/תשפג/collected_data/WURS+-+עברית+-+template+-+Copy_October+1,+2025_10.06_values.tsv", locale = locale(encoding = "UTF-16")) |>
+wurs_tshpg <- if (file.exists("data/collected_data/תשפג/WURS+-+עברית+-+template+-+Copy_October+1,+2025_10.06_values.tsv")) {
+  read_tsv("data/collected_data/תשפג/WURS+-+עברית+-+template+-+Copy_October+1,+2025_10.06_values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-wurs_tshpd <- if (file.exists("data/תשפד/collected_data/WURS_July+1,+2025_11.23.tsv")) {
-  read_tsv("data/תשפד/collected_data/WURS_July+1,+2025_11.23.tsv", locale = locale(encoding = "UTF-16")) |>
+wurs_tshpd <- if (file.exists("data/collected_data/תשפד/WURS_July+1,+2025_11.23.tsv")) {
+  read_tsv("data/collected_data/תשפד/WURS_July+1,+2025_11.23.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 8, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
 } else { tibble() }
 
-wurs_tshpe <- if (file.exists("data/תשפה/collected_data/WURS_תשפה - values.tsv")) {
-  read_tsv("data/תשפה/collected_data/WURS_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
+wurs_tshpe <- if (file.exists("data/collected_data/תשפה_תשפו/WURS_תשפה - values.tsv")) {
+  read_tsv("data/collected_data/תשפה_תשפו/WURS_תשפה - values.tsv", locale = locale(encoding = "UTF-16")) |>
     slice(-1, -2) |>
     rename(subjectid = shahar_id, date_recorded = RecordedDate) |>
     filter(nchar(subjectid) == 6, grepl("^[A-Za-z0-9]+$", subjectid), !grepl("example", subjectid, ignore.case = TRUE))
@@ -119,9 +119,9 @@ wurs <- wurs |>
 wurs <- wurs |>
   select(subjectid, date_recorded, wurs, wurs_sum, wurs1:wurs25)
 
-dir.create("data/all_cohorts_raw_data", showWarnings = FALSE, recursive = TRUE)
-save(wurs, file = "data/all_cohorts_raw_data/wurs.Rdata")
+dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
+save(wurs, file = "data/raw_data/wurs.Rdata")
 tryCatch(
-  write_xlsx(wurs, path = "data/all_cohorts_raw_data/wurs.xlsx"),
+  write_xlsx(wurs, path = "data/raw_data/wurs.xlsx"),
   error = function(e) warning("Could not write wurs.xlsx (close file if open): ", conditionMessage(e))
 )

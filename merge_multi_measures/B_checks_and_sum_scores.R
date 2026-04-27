@@ -5,7 +5,7 @@ library(tidyr)
 
 if (basename(getwd()) == "merge_multi_measures") setwd("..")
 
-load("data/all_cohorts_raw_data/df_agg.Rdata")
+load("data/raw_data/df_agg.Rdata")
 
 #### ADHD vs TD by cohort ----
 if ("diva_group" %in% names(df_agg)) {
@@ -36,5 +36,5 @@ sum_cols <- c(
 
 df_agg_sum <- df_agg |> select(any_of(sum_cols))
 
-save(df_agg, file = "data/all_cohorts_raw_data/df_agg.Rdata")
-save(df_agg_sum, file = "data/all_cohorts_raw_data/df_agg_sum_scores.Rdata")
+save(df_agg, file = "data/raw_data/df_agg.Rdata")
+save(df_agg_sum, file = "data/raw_data/df_agg_sum_scores.Rdata")
