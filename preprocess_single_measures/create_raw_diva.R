@@ -41,7 +41,7 @@ for (cohort_name in names(diva_list)) {
       rename(compensation_method = Q2_5) |>
       mutate(compensation_method = recode(compensation_method, `קרדיט` = "course_credit", `תשלום` = "monetray")) |>
       mutate(
-        group = recode(group_declared, `ביקורת` = "TD", `קשב` = "ADHD"),
+        group_declared = recode(group_declared, `ביקורת` = "TD", `קשב` = "ADHD"),
         community_diagnosis_meds = if_else(Q6 == "No", "no", "yes"),
         community_diagnosis_meds_type = Q6,
         community_diagnosis_meds_dosage = Q7,
@@ -176,7 +176,7 @@ for (cohort_name in names(diva_list)) {
       mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `כן` = "ADHD", `לא` = "TD")) |>
       rename(diva_diagnosis_subtype_coded_by_RA = Discussion13) |>
       select(
-        subjectid, date_recorded, age, exclusion_criteria,
+        subjectid, date_recorded, age, exclusion_criteria,group_declared,
         diva_IA_symptoms, diva_HI_symptoms, diva_childhood_symptoms, diva_function_adulthood, diva_function_childhood,
         DSM_criteria_A1, DSM_criteria_A2, DSM_criteria_B, DSM_criteria_C_D, diva_diagnosis, diva_diagnosis_type,
         compensation_method, community_diagnosis_age, community_diagnosis_meds, community_diagnosis_meds_type,
@@ -278,7 +278,7 @@ for (cohort_name in names(diva_list)) {
       mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `כן` = "ADHD", `לא` = "TD")) |>
       rename(diva_diagnosis_subtype_coded_by_RA = ADHD_subtype) |>
       select(
-        subjectid, date_recorded, age, exclusion_criteria,
+        subjectid, date_recorded, age, exclusion_criteria,group_declared,
         diva_IA_symptoms, diva_HI_symptoms, diva_childhood_symptoms, diva_function_adulthood, diva_function_childhood,
         DSM_criteria_A1, DSM_criteria_A2, DSM_criteria_B, DSM_criteria_C_D, diva_diagnosis, diva_diagnosis_type,
         compensation_method, community_diagnosis_age, community_diagnosis_meds, community_diagnosis_meds_type,
@@ -375,7 +375,7 @@ for (cohort_name in names(diva_list)) {
       mutate(diva_diagnosis_coded_by_RA = recode(diva_diagnosis_coded_by_RA, `1` = "ADHD", `0` = "TD")) |>
       rename(diva_diagnosis_subtype_coded_by_RA = ADHD_subtype) |>
       select(
-        subjectid, date_recorded, age,
+        subjectid, date_recorded, age,group_declared,
         diva_IA_symptoms, diva_HI_symptoms, diva_childhood_symptoms, diva_function_adulthood, diva_function_childhood,
         DSM_criteria_A1, DSM_criteria_A2, DSM_criteria_B, DSM_criteria_C_D, diva_diagnosis, diva_diagnosis_type,
         community_diagnosis_age, community_diagnosis_meds, community_diagnosis_meds_type,
@@ -454,7 +454,8 @@ diva <- keep_first_entry_with_data(diva) |>
     subjectid,
     date_recorded,
     exclusion_criteria,
-
+    group_declared,
+    
     community_diagnosis_age,
     community_diagnosis_meds,
     community_diagnosis_meds_type,
