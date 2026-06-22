@@ -1,6 +1,7 @@
 # A: Source preprocess scripts, then column-bind by subjectid into one df
 
 library(dplyr)
+library(writexl)
 options(readr.show_progress = FALSE, readr.show_col_types = FALSE)
 
 #### Source single measure scripts (silent) ----
