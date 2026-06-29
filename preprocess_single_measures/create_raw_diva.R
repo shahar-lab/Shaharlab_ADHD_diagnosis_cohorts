@@ -8,7 +8,7 @@ library(writexl)
 diva_config <- list(
   תשפג = list(input = "data/collected_data/תשפג/אבחונים+-+Diva+-+V3+-+Copy_October+1,+2025_09.55_labels.tsv", subjectid_nchar = 8, subjectid_rename = NULL),
   תשפד = list(input = "data/collected_data/תשפד/שאלון+מקדים+++DIVA_May+30,+2025_08.59.tsv", subjectid_nchar = 8, subjectid_rename = NULL),
-  תשפה = list(input = "data/collected_data/תשפה_תשפו/שאלון_מקדים_DIVA_תשפה-values.tsv", subjectid_nchar = 6, subjectid_rename = "shahar_id")
+  תשפה = list(input = "data/collected_data/תשפה_תשפו/שאלון_מקדים_DIVA_תשפה-labels.tsv", subjectid_nchar = 6, subjectid_rename = "shahar_id")
 )
 
 #### STEP 1: LOAD ----

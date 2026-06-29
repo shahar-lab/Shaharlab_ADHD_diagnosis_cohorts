@@ -55,4 +55,5 @@ if (nrow(pqb) > 0) df_agg <- df_agg |> left_join(pqb |> dedup_by_subject() |> se
 
 dir.create("data/raw_data", showWarnings = FALSE, recursive = TRUE)
 save(df_agg, file = "data/raw_data/df_agg.Rdata")
+write_xlsx(df_agg, "data/raw_data/df_agg.xlsx")
 
